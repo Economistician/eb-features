@@ -1,4 +1,4 @@
-# eb-features
+# Electric barometer Feature Engineering (`eb-features`)
 
 **eb-features** is the feature engineering layer of the **Electric Barometer** ecosystem.
 
