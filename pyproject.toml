@@ -5,6 +5,7 @@ description = "Feature engineering utilities for panel time-series data in the E
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "BSD-3-Clause" }
+license-files = ["LICENSE*"]
 
 authors = [
   { name = "Kyle Corrie (Economistician)", email = "kcorrie@economistician.com" }
@@ -26,6 +27,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering",
 ]
@@ -34,7 +36,7 @@ classifiers = [
 Homepage = "https://github.com/Economistician/eb-features"
 Repository = "https://github.com/Economistician/eb-features"
 Issues = "https://github.com/Economistician/eb-features/issues"
-Documentation = "https://github.com/Economistician/eb-docs"
+Documentation = "https://economistician.github.io/eb-docs/"
 
 [project.optional-dependencies]
 dev = [
@@ -45,6 +47,9 @@ dev = [
 [build-system]
 requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
