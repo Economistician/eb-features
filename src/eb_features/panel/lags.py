@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""
+r"""
 Lag feature construction for panel time series.
 
 This module provides stateless utilities to construct lagged versions of a target

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""
+r"""
 Rolling window feature construction for panel time series.
 
 This module provides stateless utilities to compute rolling window statistics of a

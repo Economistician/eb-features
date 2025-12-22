@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""
+r"""
 Shared constants for panel feature engineering.
 
 This module centralizes small, stable configuration values used across the
@@ -23,7 +23,7 @@ from typing import Final, FrozenSet, Tuple
 ALLOWED_ROLLING_STATS: FrozenSet[str] = frozenset(
     {"mean", "std", "min", "max", "sum", "median"}
 )
-"""
+r"""
 Allowed rolling-window summary statistics.
 
 Each statistic corresponds to a feature name of the form:
@@ -39,7 +39,7 @@ where ``w`` is the window length (in index steps) and ``stat`` is one of the all
 ALLOWED_CALENDAR_FEATURES: FrozenSet[str] = frozenset(
     {"hour", "dow", "dom", "month", "is_weekend"}
 )
-"""
+r"""
 Allowed calendar features derived from the timestamp column.
 
 Calendar features are added as integer-valued columns and may optionally be accompanied by

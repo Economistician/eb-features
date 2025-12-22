@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""
+r"""
 Calendar and time-derived features for panel time series.
 
 This module provides utilities to derive calendar/time features from a timestamp column.
