@@ -11,10 +11,30 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pypi-release-${{ github.repository }}-${{ github.ref }}
+  group: pypi-release-${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Build & Publish (via eb-integration wrapper)
-    uses: Economistician/eb-integration/.github/workflows/release-wrapper.yml@main
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: python -m pip install -U pip build
+
+      - name: Build dist
+        run: python -m build --sdist --wheel
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
