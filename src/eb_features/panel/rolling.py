@@ -104,7 +104,9 @@ def add_rolling_features(
     _validate_rolling_stats(rolling_stats)
 
     if min_periods is not None and int(min_periods) <= 0:
-        raise ValueError(f"min_periods must be a positive integer or None; got {min_periods!r}.")
+        raise ValueError(
+            f"min_periods must be a positive integer or None; got {min_periods!r}."
+        )
 
     df_out = df.copy()
     feature_cols: list[str] = []
@@ -124,7 +126,9 @@ def add_rolling_features(
             )
 
         # rolling() produces a MultiIndex keyed by entity; we drop the entity level to align to df rows.
-        roll = series_for_roll.groupby(df_out[entity_col]).rolling(window=w, min_periods=mp)
+        roll = series_for_roll.groupby(df_out[entity_col]).rolling(
+            window=w, min_periods=mp
+        )
 
         for stat in rolling_stats:
             col_name = f"roll_{w}_{stat}"

@@ -49,7 +49,9 @@ def test_engineer_transform_shapes_and_feature_names() -> None:
         leakage_safe_rolling=True,
     )
 
-    eng = FeatureEngineer(entity_col="entity_id", timestamp_col="timestamp", target_col="target")
+    eng = FeatureEngineer(
+        entity_col="entity_id", timestamp_col="timestamp", target_col="target"
+    )
     X, y, names = eng.transform(df, config)
 
     # Expected feature names (order matters: lags -> rolling -> calendar (incl cyclical) -> passthrough)
@@ -89,8 +91,12 @@ def test_engineer_requires_monotonic_timestamps_within_entity() -> None:
         df.loc[2, "timestamp"],
     )
 
-    config = FeatureConfig(lag_steps=[1], rolling_windows=None, calendar_features=["hour"])
-    eng = FeatureEngineer(entity_col="entity_id", timestamp_col="timestamp", target_col="target")
+    config = FeatureConfig(
+        lag_steps=[1], rolling_windows=None, calendar_features=["hour"]
+    )
+    eng = FeatureEngineer(
+        entity_col="entity_id", timestamp_col="timestamp", target_col="target"
+    )
 
     with pytest.raises(ValueError, match=r"strictly increasing|monotonic|Timestamps"):
         eng.transform(df, config)
@@ -100,8 +106,12 @@ def test_engineer_raises_on_negative_target() -> None:
     df = _make_panel_df(n_entities=1, n_steps=6)
     df.loc[4, "target"] = -1.0
 
-    config = FeatureConfig(lag_steps=[1], rolling_windows=None, calendar_features=["hour"])
-    eng = FeatureEngineer(entity_col="entity_id", timestamp_col="timestamp", target_col="target")
+    config = FeatureConfig(
+        lag_steps=[1], rolling_windows=None, calendar_features=["hour"]
+    )
+    eng = FeatureEngineer(
+        entity_col="entity_id", timestamp_col="timestamp", target_col="target"
+    )
 
     with pytest.raises(ValueError, match="Negative values found in target"):
         eng.transform(df, config)
@@ -129,7 +139,9 @@ def test_engineer_dropna_false_drops_rows_missing_engineered_history() -> None:
         leakage_safe_rolling=True,
     )
 
-    eng = FeatureEngineer(entity_col="entity_id", timestamp_col="timestamp", target_col="target")
+    eng = FeatureEngineer(
+        entity_col="entity_id", timestamp_col="timestamp", target_col="target"
+    )
     X, y, names = eng.transform(df, config)
 
     # Earliest fully-defined engineered features:
@@ -161,7 +173,9 @@ def test_engineer_regressor_autodetect_excludes_core_and_static() -> None:
         dropna=True,
     )
 
-    eng = FeatureEngineer(entity_col="entity_id", timestamp_col="timestamp", target_col="target")
+    eng = FeatureEngineer(
+        entity_col="entity_id", timestamp_col="timestamp", target_col="target"
+    )
     X, y, names = eng.transform(df, config)
 
     # Must include reg_num and extra_num, exclude entity/timestamp/target as features

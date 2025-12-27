@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-import pytest
-
 
 def _assert_iterable_nonempty(x: object) -> None:
     assert isinstance(x, Iterable)

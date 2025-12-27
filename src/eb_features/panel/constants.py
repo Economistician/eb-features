@@ -20,7 +20,9 @@ from typing import Final
 # -----------------------------------------------------------------------------
 # Allowed feature keys
 # -----------------------------------------------------------------------------
-ALLOWED_ROLLING_STATS: frozenset[str] = frozenset({"mean", "std", "min", "max", "sum", "median"})
+ALLOWED_ROLLING_STATS: frozenset[str] = frozenset(
+    {"mean", "std", "min", "max", "sum", "median"}
+)
 r"""
 Allowed rolling-window summary statistics.
 
@@ -34,7 +36,9 @@ where ``w`` is the window length (in index steps) and ``stat`` is one of the all
 """
 
 
-ALLOWED_CALENDAR_FEATURES: frozenset[str] = frozenset({"hour", "dow", "dom", "month", "is_weekend"})
+ALLOWED_CALENDAR_FEATURES: frozenset[str] = frozenset(
+    {"hour", "dow", "dom", "month", "is_weekend"}
+)
 r"""
 Allowed calendar features derived from the timestamp column.
 

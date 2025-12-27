@@ -28,7 +28,13 @@ from dataclasses import dataclass, field
 ALLOWED_ROLLING_STATS: tuple[str, ...] = ("mean", "std", "min", "max", "sum", "median")
 
 #: Allowed calendar feature keys derived from timestamps.
-ALLOWED_CALENDAR_FEATURES: tuple[str, ...] = ("hour", "dow", "dom", "month", "is_weekend")
+ALLOWED_CALENDAR_FEATURES: tuple[str, ...] = (
+    "hour",
+    "dow",
+    "dom",
+    "month",
+    "is_weekend",
+)
 
 
 @dataclass(frozen=True)

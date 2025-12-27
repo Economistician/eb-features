@@ -27,7 +27,9 @@ def test_validate_required_columns_raises_when_missing() -> None:
     df = pd.DataFrame({"entity_id": [0], "timestamp": [pd.Timestamp("2025-01-01")]})
 
     with pytest.raises(KeyError, match=r"missing|required|Missing|Input DataFrame"):
-        validate_required_columns(df, required_cols=("entity_id", "timestamp", "target"))
+        validate_required_columns(
+            df, required_cols=("entity_id", "timestamp", "target")
+        )
 
 
 def test_ensure_columns_present_passes_on_empty_list() -> None:
@@ -74,7 +76,9 @@ def test_validate_monotonic_timestamps_raises_when_equal_timestamps() -> None:
     )
 
     with pytest.raises(ValueError, match=r"strictly increasing|monotonic|Timestamps"):
-        validate_monotonic_timestamps(df, entity_col="entity_id", timestamp_col="timestamp")
+        validate_monotonic_timestamps(
+            df, entity_col="entity_id", timestamp_col="timestamp"
+        )
 
 
 def test_validate_monotonic_timestamps_raises_when_decreasing() -> None:
@@ -89,7 +93,9 @@ def test_validate_monotonic_timestamps_raises_when_decreasing() -> None:
     )
 
     with pytest.raises(ValueError, match=r"strictly increasing|monotonic|Timestamps"):
-        validate_monotonic_timestamps(df, entity_col="entity_id", timestamp_col="timestamp")
+        validate_monotonic_timestamps(
+            df, entity_col="entity_id", timestamp_col="timestamp"
+        )
 
 
 def test_validate_monotonic_timestamps_works_with_timezone_aware() -> None:

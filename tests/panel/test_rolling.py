@@ -236,8 +236,12 @@ def test_add_rolling_features_does_not_cross_entity_boundaries() -> None:
     )
     assert cols == ["roll_2_mean"]
 
-    sub0 = df_out[df_out["entity_id"] == 0].sort_values("timestamp").reset_index(drop=True)
-    sub1 = df_out[df_out["entity_id"] == 1].sort_values("timestamp").reset_index(drop=True)
+    sub0 = (
+        df_out[df_out["entity_id"] == 0].sort_values("timestamp").reset_index(drop=True)
+    )
+    sub1 = (
+        df_out[df_out["entity_id"] == 1].sort_values("timestamp").reset_index(drop=True)
+    )
 
     # leakage_safe=True uses shift(1), window=2, min_periods=2
     # entity 0: first defined at t=2 -> mean(y0,y1) = 0.5
