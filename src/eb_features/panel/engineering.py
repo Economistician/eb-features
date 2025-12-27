@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 r"""
 Panel feature engineering orchestrator.
 
 This module defines a lightweight, frequency-agnostic feature engineering utility for
-panel time-series data (entity × timestamp). The implementation is intentionally
+panel time-series data (entity-by-timestamp). The implementation is intentionally
 *stateless*: each call constructs features from the provided input DataFrame and
 configuration.
 
@@ -51,8 +49,10 @@ Notes
   values present in the provided DataFrame.
 """
 
+from __future__ import annotations
+
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -128,8 +128,8 @@ class FeatureConfig:
         statistics over ``y_{t-1}, \\ldots, y_{t-w}``.
     """
 
-    lag_steps: Optional[Sequence[int]] = field(default_factory=lambda: list(DEFAULT_LAG_STEPS))
-    rolling_windows: Optional[Sequence[int]] = field(
+    lag_steps: Sequence[int] | None = field(default_factory=lambda: list(DEFAULT_LAG_STEPS))
+    rolling_windows: Sequence[int] | None = field(
         default_factory=lambda: list(DEFAULT_ROLLING_WINDOWS)
     )
     rolling_stats: Sequence[str] = field(default_factory=lambda: list(DEFAULT_ROLLING_STATS))
@@ -138,8 +138,8 @@ class FeatureConfig:
     )
     use_cyclical_time: bool = True
 
-    regressor_cols: Optional[Sequence[str]] = None
-    static_cols: Optional[Sequence[str]] = None
+    regressor_cols: Sequence[str] | None = None
+    static_cols: Sequence[str] | None = None
 
     dropna: bool = True
     leakage_safe_rolling: bool = True
@@ -181,7 +181,7 @@ class FeatureEngineer:
         self,
         df: pd.DataFrame,
         config: FeatureConfig,
-    ) -> Tuple[np.ndarray, np.ndarray, List[str]]:
+    ) -> tuple[np.ndarray, np.ndarray, list[str]]:
         """
         Transform a panel DataFrame into ``(X, y, feature_names)``.
 
@@ -232,8 +232,8 @@ class FeatureEngineer:
         # ------------------------------------------------------------------
         # Build engineered features
         # ------------------------------------------------------------------
-        feature_cols: List[str] = []
-        engineered_cols: List[str] = []
+        feature_cols: list[str] = []
+        engineered_cols: list[str] = []
 
         df_work, lag_cols = add_lag_features(
             df_work,

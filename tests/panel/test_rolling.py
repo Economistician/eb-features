@@ -163,7 +163,7 @@ def test_add_rolling_features_empty_or_none_returns_copy_no_cols() -> None:
 def test_add_rolling_features_requires_columns() -> None:
     df = pd.DataFrame({"entity_id": [0, 0, 0], "target": [1.0, 2.0, 3.0]})
 
-    with pytest.raises(KeyError, match="Entity column|entity"):
+    with pytest.raises(KeyError, match=r"Entity column|entity"):
         add_rolling_features(
             df,
             entity_col="missing",
@@ -172,7 +172,7 @@ def test_add_rolling_features_requires_columns() -> None:
             rolling_stats=["mean"],
         )
 
-    with pytest.raises(KeyError, match="Target column|target"):
+    with pytest.raises(KeyError, match=r"Target column|target"):
         add_rolling_features(
             df,
             entity_col="entity_id",
@@ -185,7 +185,7 @@ def test_add_rolling_features_requires_columns() -> None:
 def test_add_rolling_features_raises_on_non_positive_window() -> None:
     df = _make_panel_df(n_entities=1, n_steps=5)
 
-    with pytest.raises(ValueError, match="Rolling window must be positive|positive"):
+    with pytest.raises(ValueError, match=r"Rolling window must be positive|positive"):
         add_rolling_features(
             df,
             entity_col="entity_id",
@@ -194,7 +194,7 @@ def test_add_rolling_features_raises_on_non_positive_window() -> None:
             rolling_stats=["mean"],
         )
 
-    with pytest.raises(ValueError, match="Rolling window must be positive|positive"):
+    with pytest.raises(ValueError, match=r"Rolling window must be positive|positive"):
         add_rolling_features(
             df,
             entity_col="entity_id",

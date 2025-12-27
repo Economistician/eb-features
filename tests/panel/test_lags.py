@@ -61,16 +61,12 @@ def test_add_lag_features_adds_expected_columns_and_values() -> None:
 def test_add_lag_features_empty_or_none_returns_copy_no_cols() -> None:
     df = _make_panel_df(n_entities=1, n_steps=4)
 
-    out1, cols1 = add_lag_features(
-        df, entity_col="entity_id", target_col="target", lag_steps=None
-    )
+    out1, cols1 = add_lag_features(df, entity_col="entity_id", target_col="target", lag_steps=None)
     assert cols1 == []
     assert out1 is not df
     assert set(out1.columns) == set(df.columns)
 
-    out2, cols2 = add_lag_features(
-        df, entity_col="entity_id", target_col="target", lag_steps=[]
-    )
+    out2, cols2 = add_lag_features(df, entity_col="entity_id", target_col="target", lag_steps=[])
     assert cols2 == []
     assert out2 is not df
     assert set(out2.columns) == set(df.columns)
@@ -79,20 +75,20 @@ def test_add_lag_features_empty_or_none_returns_copy_no_cols() -> None:
 def test_add_lag_features_requires_columns() -> None:
     df = pd.DataFrame({"entity_id": [0, 0, 0], "target": [1.0, 2.0, 3.0]})
 
-    with pytest.raises(KeyError, match="Entity column|entity"):
+    with pytest.raises(KeyError, match=r"Entity column|entity"):
         add_lag_features(df, entity_col="missing", target_col="target", lag_steps=[1])
 
-    with pytest.raises(KeyError, match="Target column|target"):
+    with pytest.raises(KeyError, match=r"Target column|target"):
         add_lag_features(df, entity_col="entity_id", target_col="missing", lag_steps=[1])
 
 
 def test_add_lag_features_raises_on_non_positive_lag() -> None:
     df = _make_panel_df(n_entities=1, n_steps=4)
 
-    with pytest.raises(ValueError, match="positive|Lag"):
+    with pytest.raises(ValueError, match=r"positive|Lag"):
         add_lag_features(df, entity_col="entity_id", target_col="target", lag_steps=[0])
 
-    with pytest.raises(ValueError, match="positive|Lag"):
+    with pytest.raises(ValueError, match=r"positive|Lag"):
         add_lag_features(df, entity_col="entity_id", target_col="target", lag_steps=[-1])
 
 
@@ -106,9 +102,7 @@ def test_add_lag_features_does_not_cross_entity_boundaries() -> None:
         }
     )
 
-    df_out, cols = add_lag_features(
-        df, entity_col="entity_id", target_col="target", lag_steps=[1]
-    )
+    df_out, cols = add_lag_features(df, entity_col="entity_id", target_col="target", lag_steps=[1])
     assert cols == ["lag_1"]
 
     sub0 = df_out[df_out["entity_id"] == 0].sort_values("timestamp")

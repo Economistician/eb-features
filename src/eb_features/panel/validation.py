@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Validation utilities for panel feature engineering.
 
@@ -14,8 +12,9 @@ Key invariants
   computation, but validation should catch out-of-order input.)
 """
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
-from typing import Tuple
 
 import pandas as pd
 
@@ -116,13 +115,12 @@ def validate_monotonic_timestamps(
         if g_ts.size <= 1:
             continue
 
-        # strictly increasing means every forward diff is > 0
-        # Note: pandas datetime64 diffs yield timedelta64; > 0 works.
-        if not (g_ts[1:] > g_ts[:-1]).all():
-            # Provide a small diagnostic: first offending index position within entity
-            bad_pos = int(((g_ts[1:] > g_ts[:-1]) == False).nonzero()[0][0] + 1)  # noqa: E712
+        is_increasing = g_ts[1:] > g_ts[:-1]
+        if not is_increasing.all():
+            # Provide a small diagnostic: first offending index position within entity.
+            bad_pos = int((~is_increasing).nonzero()[0][0] + 1)
             raise ValueError(
-                f"Timestamps must be strictly increasing within each entity. "
+                "Timestamps must be strictly increasing within each entity. "
                 f"Found non-monotonic sequence for entity={ent!r} at position {bad_pos} "
-                f"(in the provided row order)."
+                "(in the provided row order)."
             )

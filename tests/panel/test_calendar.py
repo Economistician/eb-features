@@ -92,9 +92,7 @@ def test_add_calendar_features_does_not_add_cyclical_if_base_missing() -> None:
 
 def test_add_calendar_features_is_weekend_correctness_known_dates() -> None:
     # 2025-01-04 is Saturday, 2025-01-05 is Sunday, 2025-01-06 is Monday
-    ts = pd.to_datetime(
-        ["2025-01-04 12:00:00", "2025-01-05 12:00:00", "2025-01-06 12:00:00"]
-    )
+    ts = pd.to_datetime(["2025-01-04 12:00:00", "2025-01-05 12:00:00", "2025-01-06 12:00:00"])
     df = pd.DataFrame({"timestamp": ts})
 
     df_out, feature_cols, calendar_cols = add_calendar_features(
@@ -115,7 +113,7 @@ def test_add_calendar_features_is_weekend_correctness_known_dates() -> None:
 def test_add_calendar_features_raises_on_missing_timestamp_col() -> None:
     df = pd.DataFrame({"not_timestamp": [pd.Timestamp("2025-01-01")]})
 
-    with pytest.raises(KeyError, match="Timestamp column .* not found"):
+    with pytest.raises(KeyError, match=r"Timestamp column .* not found"):
         add_calendar_features(
             df,
             timestamp_col="timestamp",
@@ -141,7 +139,7 @@ def test_add_calendar_features_accepts_timezone_aware_timestamps() -> None:
     ts = pd.date_range("2025-01-01 00:00:00", periods=5, freq="h", tz="UTC")
     df = pd.DataFrame({"timestamp": ts})
 
-    df_out, feature_cols, calendar_cols = add_calendar_features(
+    df_out, _feature_cols, calendar_cols = add_calendar_features(
         df,
         timestamp_col="timestamp",
         calendar_features=["hour", "dow"],

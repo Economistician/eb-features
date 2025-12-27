@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Encoding utilities for panel feature engineering.
 
@@ -24,7 +22,9 @@ consider:
 - introducing a fitted encoder with persisted category mappings.
 """
 
-from typing import Iterable
+from __future__ import annotations
+
+from collections.abc import Iterable
 
 import pandas as pd
 from pandas.api.types import is_bool_dtype, is_numeric_dtype
@@ -53,7 +53,7 @@ def encode_non_numeric_as_category_codes(
     -------
     pandas.DataFrame
         Copy of ``feature_frame`` where:
-        - boolean columns are converted to {0,1}
+        - boolean columns are converted to {0, 1}
         - non-numeric, non-boolean columns are replaced by categorical integer codes
 
     Notes

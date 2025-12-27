@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Configuration objects for panel time-series feature engineering.
 
@@ -12,27 +10,30 @@ pipeline. The configuration is designed to be:
 
 Notes
 -----
-This configuration is consumed by [`FeatureEngineer`][eb_features.panel.engineer.FeatureEngineer]
-and related helper modules (lags, rolling, calendar, encoders).
+This configuration is consumed by
+[`FeatureEngineer`][eb_features.panel.engineering.FeatureEngineer] and related helper
+modules (lags, rolling, calendar, encoders).
 """
 
+from __future__ import annotations
+
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Optional, Sequence, Tuple
 
 # -------------------------------------------------------------------------
 # Public constants (useful for validation, docs, and IDE discoverability)
 # -------------------------------------------------------------------------
 
 #: Allowed rolling statistics for rolling window features.
-ALLOWED_ROLLING_STATS: Tuple[str, ...] = ("mean", "std", "min", "max", "sum", "median")
+ALLOWED_ROLLING_STATS: tuple[str, ...] = ("mean", "std", "min", "max", "sum", "median")
 
 #: Allowed calendar feature keys derived from timestamps.
-ALLOWED_CALENDAR_FEATURES: Tuple[str, ...] = ("hour", "dow", "dom", "month", "is_weekend")
+ALLOWED_CALENDAR_FEATURES: tuple[str, ...] = ("hour", "dow", "dom", "month", "is_weekend")
 
 
 @dataclass(frozen=True)
 class FeatureConfig:
-    r"""
+    """
     Configuration for panel time-series feature engineering.
 
     The feature engineering pipeline assumes a long-form panel DataFrame with an entity
@@ -77,9 +78,9 @@ class FeatureConfig:
         by lags and rolling windows).
     """
 
-    lag_steps: Optional[Sequence[int]] = field(default_factory=lambda: (1, 2, 24))
+    lag_steps: Sequence[int] | None = field(default_factory=lambda: (1, 2, 24))
 
-    rolling_windows: Optional[Sequence[int]] = field(default_factory=lambda: (3, 24))
+    rolling_windows: Sequence[int] | None = field(default_factory=lambda: (3, 24))
     rolling_stats: Sequence[str] = field(
         default_factory=lambda: ("mean", "std", "min", "max", "sum")
     )
@@ -89,7 +90,7 @@ class FeatureConfig:
     )
     use_cyclical_time: bool = True
 
-    regressor_cols: Optional[Sequence[str]] = None
-    static_cols: Optional[Sequence[str]] = None
+    regressor_cols: Sequence[str] | None = None
+    static_cols: Sequence[str] | None = None
 
     dropna: bool = True

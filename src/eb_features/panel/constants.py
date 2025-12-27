@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 r"""
 Shared constants for panel feature engineering.
 
@@ -15,14 +13,14 @@ Notes
   used consistently across feature builders.
 """
 
-from typing import Final, FrozenSet, Tuple
+from __future__ import annotations
+
+from typing import Final
 
 # -----------------------------------------------------------------------------
 # Allowed feature keys
 # -----------------------------------------------------------------------------
-ALLOWED_ROLLING_STATS: FrozenSet[str] = frozenset(
-    {"mean", "std", "min", "max", "sum", "median"}
-)
+ALLOWED_ROLLING_STATS: frozenset[str] = frozenset({"mean", "std", "min", "max", "sum", "median"})
 r"""
 Allowed rolling-window summary statistics.
 
@@ -36,9 +34,7 @@ where ``w`` is the window length (in index steps) and ``stat`` is one of the all
 """
 
 
-ALLOWED_CALENDAR_FEATURES: FrozenSet[str] = frozenset(
-    {"hour", "dow", "dom", "month", "is_weekend"}
-)
+ALLOWED_CALENDAR_FEATURES: frozenset[str] = frozenset({"hour", "dow", "dom", "month", "is_weekend"})
 r"""
 Allowed calendar features derived from the timestamp column.
 
@@ -49,12 +45,12 @@ cyclical encodings (sine/cosine) for periodic components.
 # -----------------------------------------------------------------------------
 # Default configuration values (used by FeatureConfig)
 # -----------------------------------------------------------------------------
-DEFAULT_LAG_STEPS: Final[Tuple[int, ...]] = (1, 2, 24)
+DEFAULT_LAG_STEPS: Final[tuple[int, ...]] = (1, 2, 24)
 
-DEFAULT_ROLLING_WINDOWS: Final[Tuple[int, ...]] = (3, 24)
-DEFAULT_ROLLING_STATS: Final[Tuple[str, ...]] = ("mean", "std", "min", "max", "sum")
+DEFAULT_ROLLING_WINDOWS: Final[tuple[int, ...]] = (3, 24)
+DEFAULT_ROLLING_STATS: Final[tuple[str, ...]] = ("mean", "std", "min", "max", "sum")
 
-DEFAULT_CALENDAR_FEATURES: Final[Tuple[str, ...]] = (
+DEFAULT_CALENDAR_FEATURES: Final[tuple[str, ...]] = (
     "hour",
     "dow",
     "month",
@@ -71,5 +67,5 @@ DOW_PERIOD: Final[int] = 7
 """Period used for cyclical day-of-week encodings."""
 
 # pandas dt.dayofweek convention: Monday=0 ... Sunday=6
-WEEKEND_DAYS: Final[Tuple[int, int]] = (5, 6)
+WEEKEND_DAYS: Final[tuple[int, int]] = (5, 6)
 """Day-of-week values corresponding to Saturday and Sunday."""

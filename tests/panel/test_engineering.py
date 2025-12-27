@@ -92,7 +92,7 @@ def test_engineer_requires_monotonic_timestamps_within_entity() -> None:
     config = FeatureConfig(lag_steps=[1], rolling_windows=None, calendar_features=["hour"])
     eng = FeatureEngineer(entity_col="entity_id", timestamp_col="timestamp", target_col="target")
 
-    with pytest.raises(ValueError, match="strictly increasing|monotonic|Timestamps"):
+    with pytest.raises(ValueError, match=r"strictly increasing|monotonic|Timestamps"):
         eng.transform(df, config)
 
 

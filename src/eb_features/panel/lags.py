@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 r"""
 Lag feature construction for panel time series.
 
 This module provides stateless utilities to construct lagged versions of a target
-series within each entity of a panel (entity × timestamp) dataset.
+series within each entity of a panel (entity-by-timestamp) dataset.
 
 Lag features are expressed in **index steps** (rows) at the input frequency rather than
 wall-clock units. This makes the transformation frequency-agnostic (5-min, 30-min,
@@ -27,7 +25,9 @@ Notes
   (e.g., dropping rows or applying imputation).
 """
 
-from typing import List, Optional, Sequence, Tuple
+from __future__ import annotations
+
+from collections.abc import Sequence
 
 import pandas as pd
 
@@ -37,8 +37,8 @@ def add_lag_features(
     *,
     entity_col: str,
     target_col: str,
-    lag_steps: Optional[Sequence[int]],
-) -> Tuple[pd.DataFrame, List[str]]:
+    lag_steps: Sequence[int] | None,
+) -> tuple[pd.DataFrame, list[str]]:
     r"""
     Add target lag features to a panel DataFrame.
 
@@ -83,7 +83,7 @@ def add_lag_features(
         return df.copy(), []
 
     df_out = df.copy()
-    feature_cols: List[str] = []
+    feature_cols: list[str] = []
 
     for k in lag_steps:
         if k <= 0:

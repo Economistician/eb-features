@@ -26,7 +26,7 @@ def test_validate_required_columns_passes_when_present() -> None:
 def test_validate_required_columns_raises_when_missing() -> None:
     df = pd.DataFrame({"entity_id": [0], "timestamp": [pd.Timestamp("2025-01-01")]})
 
-    with pytest.raises(KeyError, match="missing|required|Missing|Input DataFrame"):
+    with pytest.raises(KeyError, match=r"missing|required|Missing|Input DataFrame"):
         validate_required_columns(df, required_cols=("entity_id", "timestamp", "target"))
 
 
@@ -38,7 +38,7 @@ def test_ensure_columns_present_passes_on_empty_list() -> None:
 def test_ensure_columns_present_raises_for_missing_with_label() -> None:
     df = pd.DataFrame({"a": [1], "b": [2]})
 
-    with pytest.raises(KeyError, match="Static|missing|not found|columns"):
+    with pytest.raises(KeyError, match=r"Static|missing|not found|columns"):
         ensure_columns_present(df, columns=["a", "c"], label="Static")
 
 
@@ -73,7 +73,7 @@ def test_validate_monotonic_timestamps_raises_when_equal_timestamps() -> None:
         }
     )
 
-    with pytest.raises(ValueError, match="strictly increasing|monotonic|Timestamps"):
+    with pytest.raises(ValueError, match=r"strictly increasing|monotonic|Timestamps"):
         validate_monotonic_timestamps(df, entity_col="entity_id", timestamp_col="timestamp")
 
 
@@ -88,7 +88,7 @@ def test_validate_monotonic_timestamps_raises_when_decreasing() -> None:
         }
     )
 
-    with pytest.raises(ValueError, match="strictly increasing|monotonic|Timestamps"):
+    with pytest.raises(ValueError, match=r"strictly increasing|monotonic|Timestamps"):
         validate_monotonic_timestamps(df, entity_col="entity_id", timestamp_col="timestamp")
 
 

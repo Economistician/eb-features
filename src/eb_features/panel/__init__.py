@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Panel time-series feature engineering.
 
@@ -33,6 +31,8 @@ See Also
 - [`eb_features.panel.engineering.FeatureEngineer`][eb_features.panel.engineering.FeatureEngineer]
 - [`eb_features.panel.engineering.FeatureConfig`][eb_features.panel.engineering.FeatureConfig]
 """
+
+from __future__ import annotations
 
 from eb_features.panel.engineering import FeatureConfig, FeatureEngineer
 

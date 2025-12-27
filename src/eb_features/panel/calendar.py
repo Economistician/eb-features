@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 r"""
 Calendar and time-derived features for panel time series.
 
 This module provides utilities to derive calendar/time features from a timestamp column.
-It is designed for *panel* time-series data (entity × timestamp) and is typically used
+It is designed for *panel* time-series data (entity-by-timestamp) and is typically used
 as part of a broader feature engineering pipeline.
 
 Supported base calendar features
@@ -47,7 +45,9 @@ Notes
   representation as stored in the column.
 """
 
-from typing import Iterable, List, Sequence, Tuple
+from __future__ import annotations
+
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 import pandas as pd
@@ -66,7 +66,7 @@ def add_calendar_features(
     timestamp_col: str,
     calendar_features: Sequence[str],
     use_cyclical_time: bool = True,
-) -> Tuple[pd.DataFrame, List[str], List[str]]:
+) -> tuple[pd.DataFrame, list[str], list[str]]:
     r"""
     Add calendar/time-derived features to a DataFrame.
 
@@ -119,8 +119,8 @@ def add_calendar_features(
     df_out = df.copy()
     ts = pd.to_datetime(df_out[timestamp_col])
 
-    calendar_cols: List[str] = []
-    feature_cols: List[str] = []
+    calendar_cols: list[str] = []
+    feature_cols: list[str] = []
 
     for name in calendar_features:
         if name == "hour":

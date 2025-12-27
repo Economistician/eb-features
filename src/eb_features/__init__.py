@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Feature engineering utilities for the Electric Barometer ecosystem.
 
@@ -9,12 +7,14 @@ used across forecasting, evaluation, and operational modeling workflows.
 Subpackages
 -----------
 panel
-    Feature engineering utilities for panel (entity × timestamp) time-series data.
+    Feature engineering utilities for panel (entity x timestamp) time-series data.
 
 Notes
 -----
 This package intentionally exposes a small public API. Most functionality is
-accessed through subpackages such as `eb_features.panel`.
+accessed through subpackages such as ``eb_features.panel``.
 """
 
-__all__ = []
+from __future__ import annotations
+
+__all__: list[str] = []

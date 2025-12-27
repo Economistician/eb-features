@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 r"""
 Rolling window feature construction for panel time series.
 
 This module provides stateless utilities to compute rolling window statistics of a
-target series within each entity of a panel (entity × timestamp) dataset.
+target series within each entity of a panel (entity-by-timestamp) dataset.
 
 Rolling windows are expressed in **index steps** (rows) at the input frequency rather
 than wall-clock units. This keeps the transformation frequency-agnostic.
@@ -31,7 +29,9 @@ Notes
   deciding how to handle NaNs introduced by rolling windows (e.g., dropping rows).
 """
 
-from typing import List, Optional, Sequence, Tuple
+from __future__ import annotations
+
+from collections.abc import Sequence
 
 import pandas as pd
 
@@ -43,11 +43,11 @@ def add_rolling_features(
     *,
     entity_col: str,
     target_col: str,
-    rolling_windows: Optional[Sequence[int]],
+    rolling_windows: Sequence[int] | None,
     rolling_stats: Sequence[str],
-    min_periods: Optional[int] = None,
+    min_periods: int | None = None,
     leakage_safe: bool = True,
-) -> Tuple[pd.DataFrame, List[str]]:
+) -> tuple[pd.DataFrame, list[str]]:
     r"""
     Add rolling window statistics features to a panel DataFrame.
 
@@ -65,8 +65,7 @@ def add_rolling_features(
         empty, no rolling features are added.
     rolling_stats : Sequence[str]
         Rolling statistics to compute. Allowed values are:
-
-        $$\{ \mathrm{mean}, \mathrm{std}, \mathrm{min}, \mathrm{max}, \mathrm{sum}, \mathrm{median} \}$$
+        ``{"mean", "std", "min", "max", "sum", "median"}``.
     min_periods : int | None, default None
         Minimum number of observations in the window required to produce a value. If None,
         defaults to ``w`` (full-window requirement).
@@ -108,7 +107,7 @@ def add_rolling_features(
         raise ValueError(f"min_periods must be a positive integer or None; got {min_periods!r}.")
 
     df_out = df.copy()
-    feature_cols: List[str] = []
+    feature_cols: list[str] = []
 
     # Compute rolling features within each entity.
     grp = df_out.groupby(entity_col)[target_col]
@@ -120,7 +119,9 @@ def add_rolling_features(
 
         mp = w if min_periods is None else int(min_periods)
         if mp > w:
-            raise ValueError(f"min_periods must be <= window length w; got min_periods={mp}, w={w}.")
+            raise ValueError(
+                f"min_periods must be <= window length w; got min_periods={mp}, w={w}."
+            )
 
         # rolling() produces a MultiIndex keyed by entity; we drop the entity level to align to df rows.
         roll = series_for_roll.groupby(df_out[entity_col]).rolling(window=w, min_periods=mp)
