@@ -77,10 +77,10 @@ try:
         DEFAULT_ROLLING_WINDOWS,
     )
 except Exception:  # pragma: no cover
-    DEFAULT_LAG_STEPS = (1, 2, 24)
-    DEFAULT_ROLLING_WINDOWS = (3, 24)
-    DEFAULT_ROLLING_STATS = ("mean", "std", "min", "max", "sum")
-    DEFAULT_CALENDAR_FEATURES = ("hour", "dow", "month", "is_weekend")
+    DEFAULT_LAG_STEPS: Sequence[int] = (1, 2, 24)
+    DEFAULT_ROLLING_WINDOWS: Sequence[int] = (3, 24)
+    DEFAULT_ROLLING_STATS: Sequence[str] = ("mean", "std", "min", "max", "sum")
+    DEFAULT_CALENDAR_FEATURES: Sequence[str] = ("hour", "dow", "month", "is_weekend")
 
 
 @dataclass(frozen=True)
@@ -293,6 +293,10 @@ class FeatureEngineer:
                     df_work = df_work.dropna(subset=engineered_cols)
 
         feature_frame = df_work[feature_cols].copy()
+
+        # Narrow type to DataFrame to ensure attribute access (.columns, .to_numpy)
+        if not isinstance(feature_frame, pd.DataFrame):  # pragma: no cover
+            feature_frame = pd.DataFrame(feature_frame)
 
         # Encode any remaining non-numeric feature columns.
         if any(not is_numeric_dtype(feature_frame[c]) for c in feature_frame.columns):
