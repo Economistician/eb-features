@@ -93,45 +93,6 @@ except Exception:  # pragma: no cover
 class FeatureConfig:
     """
     Configuration for panel time-series feature engineering.
-
-    Notes
-    -----
-    - All lag steps and rolling window lengths are expressed in **index steps** (rows).
-    - Lags and rolling windows are computed **within each entity**.
-    - If ``dropna=True``, rows that lack full lag/rolling history are dropped after feature
-      construction.
-
-    Attributes
-    ----------
-    lag_steps : Sequence[int] | None
-        Positive lag offsets (in steps) applied to the target. For each ``k`` in ``lag_steps``,
-        the feature ``lag_{k}`` is added.
-    rolling_windows : Sequence[int] | None
-        Positive rolling window lengths (in steps) applied to the target. For each ``w`` in
-        ``rolling_windows`` and each stat in ``rolling_stats``, the feature ``roll_{w}_{stat}``
-        is added.
-    rolling_stats : Sequence[str]
-        Rolling statistics to compute. Allowed values are:
-        ``{"mean", "std", "min", "max", "sum", "median"}``.
-    calendar_features : Sequence[str]
-        Calendar features derived from ``timestamp_col``. Allowed values:
-        ``{"hour", "dow", "dom", "month", "is_weekend"}``.
-    use_cyclical_time : bool
-        If True, add sine/cosine encodings for hour and day-of-week when those base columns
-        are present.
-    regressor_cols : Sequence[str] | None
-        Numeric external regressors to pass through. If None, numeric columns are auto-detected
-        excluding entity/timestamp/target and ``static_cols``.
-    static_cols : Sequence[str] | None
-        Entity-level metadata columns already present on the input DataFrame. These are passed
-        through directly as features.
-    dropna : bool
-        If True, drop rows with NaNs in any feature columns.
-        If False, drop rows with NaNs in *engineered* feature columns only (lags/rolling/calendar),
-        allowing passthrough regressors/static columns to contain NaNs for upstream imputation.
-    leakage_safe_rolling : bool
-        If True, rolling window features exclude the current target value ``y_t`` by computing
-        statistics over ``y_{t-1}, \\ldots, y_{t-w}``.
     """
 
     lag_steps: Sequence[int] | None = field(default_factory=lambda: list(_LAG_INIT))
@@ -150,23 +111,6 @@ class FeatureConfig:
 class FeatureEngineer:
     """
     Transform panel time-series data into a model-ready ``(X, y, feature_names)`` triple.
-
-    The input is expected to be a long-form DataFrame with at least:
-
-    - ``entity_col``: series identifier (e.g., store_id, sku_id)
-    - ``timestamp_col``: datetime-like timestamp
-    - ``target_col``: numeric target to be predicted
-
-    This transformer computes features strictly within entity, requires timestamps to be
-    strictly increasing within each entity, and can optionally drop rows lacking sufficient
-    history.
-
-    Notes
-    -----
-    - This class does not store fitted state. Feature generation is deterministic given the
-      inputs.
-    - Non-numeric feature columns are encoded using integer category codes for the values
-      present in the provided DataFrame.
     """
 
     def __init__(
@@ -186,33 +130,16 @@ class FeatureEngineer:
     ) -> tuple[np.ndarray, np.ndarray, list[str]]:
         """
         Transform a panel DataFrame into ``(X, y, feature_names)``.
-
-        Validation policy
-        -----------------
-        - We validate monotonicity on the **input row order** first (to catch bad upstream ordering).
-        - We then sort by (entity, timestamp) for deterministic feature computation.
-
-        Raises
-        ------
-        KeyError
-            If required columns or configured passthrough columns are missing.
-        ValueError
-            If timestamps are not strictly increasing within each entity (in input row order),
-            if the target contains negative values, or if non-finite values are present in
-            the resulting ``X``/``y``.
         """
         validate_required_columns(
             df,
             required_cols=(self.entity_col, self.timestamp_col, self.target_col),
         )
 
-        # IMPORTANT: validate in the provided row order (do NOT sort first),
-        # so we can catch upstream ordering issues.
         validate_monotonic_timestamps(
             df, entity_col=self.entity_col, timestamp_col=self.timestamp_col
         )
 
-        # Work on a copy, sorted by entity / timestamp for deterministic feature building
         df_work = df.copy()
         df_work = df_work.sort_values([self.entity_col, self.timestamp_col], kind="mergesort")
 
@@ -271,7 +198,6 @@ class FeatureEngineer:
         feature_cols.extend(cal_feature_cols)
         engineered_cols.extend(cal_feature_cols)
 
-        # Passthrough: static + regressors
         feature_cols.extend(static_cols)
         feature_cols.extend(regressor_cols)
 
@@ -280,31 +206,29 @@ class FeatureEngineer:
         # ------------------------------------------------------------------
         df_work = df_work[~df_work[self.target_col].isna()]
 
-        # For demand-like series, enforce non-negative target.
         if (df_work[self.target_col] < 0).any():
             raise ValueError("Negative values found in target column; expected >= 0.")
 
-        # NaN handling:
-        # - dropna=True: strict, drop rows missing any feature (engineered or passthrough)
-        # - dropna=False: permissive, still require engineered features to be present
+        # Type narrowing for dropna overloads
+        assert isinstance(df_work, pd.DataFrame)
+
         if feature_cols:
             if config.dropna:
-                df_work = df_work.dropna(subset=feature_cols)
-            else:
-                if engineered_cols:
-                    df_work = df_work.dropna(subset=engineered_cols)
+                df_work = df_work.dropna(axis=0, subset=feature_cols)
+            elif engineered_cols:
+                df_work = df_work.dropna(axis=0, subset=engineered_cols)
 
-        # Narrow type to DataFrame to ensure attribute access
-        feature_frame = df_work[feature_cols].copy()
-        if not isinstance(feature_frame, pd.DataFrame):  # pragma: no cover
-            feature_frame = pd.DataFrame(feature_frame)
+        # Ensure we are working with a DataFrame for the final matrix creation
+        final_df = df_work[feature_cols].copy()
+        if not isinstance(final_df, pd.DataFrame):
+            final_df = pd.DataFrame(final_df)
 
         # Encode any remaining non-numeric feature columns.
-        if any(not is_numeric_dtype(feature_frame[c]) for c in feature_frame.columns):
-            feature_frame = encode_non_numeric_as_category_codes(feature_frame)
+        if any(not is_numeric_dtype(final_df[c]) for c in final_df.columns):
+            final_df = encode_non_numeric_as_category_codes(final_df)
 
-        # Cast to help Pyright resolve to_numpy attribute safely
-        feature_frame = cast(pd.DataFrame, feature_frame)
+        # Final cast to satisfy to_numpy access
+        feature_frame = cast(pd.DataFrame, final_df)
 
         X_values = feature_frame.to_numpy(dtype=float)
         y_values = df_work[self.target_col].to_numpy(dtype=float)
