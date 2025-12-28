@@ -128,15 +128,11 @@ class FeatureConfig:
         statistics over ``y_{t-1}, \\ldots, y_{t-w}``.
     """
 
-    lag_steps: Sequence[int] | None = field(
-        default_factory=lambda: list(DEFAULT_LAG_STEPS)
-    )
+    lag_steps: Sequence[int] | None = field(default_factory=lambda: list(DEFAULT_LAG_STEPS))
     rolling_windows: Sequence[int] | None = field(
         default_factory=lambda: list(DEFAULT_ROLLING_WINDOWS)
     )
-    rolling_stats: Sequence[str] = field(
-        default_factory=lambda: list(DEFAULT_ROLLING_STATS)
-    )
+    rolling_stats: Sequence[str] = field(default_factory=lambda: list(DEFAULT_ROLLING_STATS))
     calendar_features: Sequence[str] = field(
         default_factory=lambda: list(DEFAULT_CALENDAR_FEATURES)
     )
@@ -216,9 +212,7 @@ class FeatureEngineer:
 
         # Work on a copy, sorted by entity / timestamp for deterministic feature building
         df_work = df.copy()
-        df_work = df_work.sort_values(
-            [self.entity_col, self.timestamp_col], kind="mergesort"
-        )
+        df_work = df_work.sort_values([self.entity_col, self.timestamp_col], kind="mergesort")
 
         # ------------------------------------------------------------------
         # Identify passthrough columns

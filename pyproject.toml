@@ -3,7 +3,7 @@
 ######################################
 [project]
 name = "eb-features"
-version = "0.2.5"
+version = "0.2.6"
 description = "Feature engineering utilities for panel time-series data in the Electric Barometer ecosystem."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -52,9 +52,19 @@ Documentation = "https://economistician.github.io/eb-docs/"
 ######################################
 [project.optional-dependencies]
 
+test = [
+  "pytest>=8.0",
+]
+
 dev = [
   "pytest>=8.0",
   "pytest-cov>=5.0",
+]
+
+# Standardized anchor to satisfy the "extras: all" CI contract.
+# Aggregates dev and test dependencies for the Hub runner.
+all = [
+  "eb-features[dev,test]"
 ]
 
 ######################################

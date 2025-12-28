@@ -19,9 +19,7 @@ from collections.abc import Iterable, Sequence
 import pandas as pd
 
 
-def validate_required_columns(
-    df: pd.DataFrame, *, required_cols: Sequence[str]
-) -> None:
+def validate_required_columns(df: pd.DataFrame, *, required_cols: Sequence[str]) -> None:
     """
     Validate that required columns exist on a DataFrame.
 
@@ -42,9 +40,7 @@ def validate_required_columns(
         raise KeyError(f"Missing required column(s): {missing}.")
 
 
-def ensure_columns_present(
-    df: pd.DataFrame, *, columns: Iterable[str], label: str
-) -> None:
+def ensure_columns_present(df: pd.DataFrame, *, columns: Iterable[str], label: str) -> None:
     """
     Ensure that a set of configured columns exists on a DataFrame.
 

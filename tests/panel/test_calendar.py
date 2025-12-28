@@ -43,9 +43,7 @@ def test_add_calendar_features_adds_expected_base_columns_and_names() -> None:
     assert pd.api.types.is_integer_dtype(df_out["is_weekend"])
 
 
-def test_add_calendar_features_with_cyclical_time_adds_sin_cos_when_base_present() -> (
-    None
-):
+def test_add_calendar_features_with_cyclical_time_adds_sin_cos_when_base_present() -> None:
     # Two days to ensure dow changes, many hours to ensure hour changes
     df = _make_df(n=48)
 
@@ -94,9 +92,7 @@ def test_add_calendar_features_does_not_add_cyclical_if_base_missing() -> None:
 
 def test_add_calendar_features_is_weekend_correctness_known_dates() -> None:
     # 2025-01-04 is Saturday, 2025-01-05 is Sunday, 2025-01-06 is Monday
-    ts = pd.to_datetime(
-        ["2025-01-04 12:00:00", "2025-01-05 12:00:00", "2025-01-06 12:00:00"]
-    )
+    ts = pd.to_datetime(["2025-01-04 12:00:00", "2025-01-05 12:00:00", "2025-01-06 12:00:00"])
     df = pd.DataFrame({"timestamp": ts})
 
     df_out, feature_cols, calendar_cols = add_calendar_features(
@@ -155,6 +151,4 @@ def test_add_calendar_features_accepts_timezone_aware_timestamps() -> None:
         assert c in df_out.columns
     assert df_out["hour"].between(0, 23).all()
     assert df_out["dayofweek"].between(0, 6).all()
-    assert np.isfinite(
-        df_out[["hour_sin", "hour_cos", "dow_sin", "dow_cos"]].to_numpy()
-    ).all()
+    assert np.isfinite(df_out[["hour_sin", "hour_cos", "dow_sin", "dow_cos"]].to_numpy()).all()

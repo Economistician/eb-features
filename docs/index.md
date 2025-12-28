@@ -16,9 +16,9 @@ time ordering, entity boundaries, and real-world deployment constraints.
 
 Electric Barometer packages follow a consistent naming convention:
 
-- **Distribution names** (used with `pip install`) use hyphens  
+- **Distribution names** (used with `pip install`) use hyphens
   e.g. `pip install eb-features`
-- **Python import paths** use underscores  
+- **Python import paths** use underscores
   e.g. `import eb_features`
 
 This follows standard Python packaging practices and avoids ambiguity between
@@ -76,7 +76,7 @@ Supporting utilities to ensure model-ready feature matrices.
 
 ## Documentation structure
 
-- **API Reference**  
+- **API Reference**
   All feature engineering utilities are documented automatically from
   NumPy-style docstrings in the source code using `mkdocstrings`.
 

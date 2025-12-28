@@ -7,9 +7,7 @@ import pytest
 from eb_features.panel.encoders import encode_non_numeric_as_category_codes
 
 
-def test_encode_non_numeric_as_category_codes_encodes_object_and_preserves_numeric() -> (
-    None
-):
+def test_encode_non_numeric_as_category_codes_encodes_object_and_preserves_numeric() -> None:
     df = pd.DataFrame(
         {
             "num": [1.0, 2.5, 3.0],
@@ -25,9 +23,7 @@ def test_encode_non_numeric_as_category_codes_encodes_object_and_preserves_numer
     assert list(out.columns) == list(df.columns)
 
     # Numeric column preserved exactly (dtype may stay numeric)
-    assert np.allclose(
-        out["num"].to_numpy(dtype=float), df["num"].to_numpy(dtype=float)
-    )
+    assert np.allclose(out["num"].to_numpy(dtype=float), df["num"].to_numpy(dtype=float))
 
     # Non-numeric columns become numeric and finite
     assert np.issubdtype(out["cat"].dtype, np.number)
