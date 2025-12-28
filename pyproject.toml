@@ -3,7 +3,7 @@
 ######################################
 [project]
 name = "eb-features"
-version = "0.2.4"
+version = "0.2.5"
 description = "Feature engineering utilities for panel time-series data in the Electric Barometer ecosystem."
 readme = "README.md"
 requires-python = ">=3.10"
