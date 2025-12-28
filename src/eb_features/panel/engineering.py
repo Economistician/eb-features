@@ -53,6 +53,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -68,19 +69,24 @@ from eb_features.panel.validation import (
     validate_required_columns,
 )
 
+# Use internal variables to avoid Final reassignment errors from Pyright
 try:
-    # Prefer a single source of truth for allowed feature keys and defaults.
     from eb_features.panel.constants import (
         DEFAULT_CALENDAR_FEATURES,
         DEFAULT_LAG_STEPS,
         DEFAULT_ROLLING_STATS,
         DEFAULT_ROLLING_WINDOWS,
     )
+
+    _LAG_INIT = DEFAULT_LAG_STEPS
+    _ROLL_WIN_INIT = DEFAULT_ROLLING_WINDOWS
+    _ROLL_STAT_INIT = DEFAULT_ROLLING_STATS
+    _CAL_INIT = DEFAULT_CALENDAR_FEATURES
 except Exception:  # pragma: no cover
-    DEFAULT_LAG_STEPS: Sequence[int] = (1, 2, 24)
-    DEFAULT_ROLLING_WINDOWS: Sequence[int] = (3, 24)
-    DEFAULT_ROLLING_STATS: Sequence[str] = ("mean", "std", "min", "max", "sum")
-    DEFAULT_CALENDAR_FEATURES: Sequence[str] = ("hour", "dow", "month", "is_weekend")
+    _LAG_INIT = (1, 2, 24)
+    _ROLL_WIN_INIT = (3, 24)
+    _ROLL_STAT_INIT = ("mean", "std", "min", "max", "sum")
+    _CAL_INIT = ("hour", "dow", "month", "is_weekend")
 
 
 @dataclass(frozen=True)
@@ -128,14 +134,10 @@ class FeatureConfig:
         statistics over ``y_{t-1}, \\ldots, y_{t-w}``.
     """
 
-    lag_steps: Sequence[int] | None = field(default_factory=lambda: list(DEFAULT_LAG_STEPS))
-    rolling_windows: Sequence[int] | None = field(
-        default_factory=lambda: list(DEFAULT_ROLLING_WINDOWS)
-    )
-    rolling_stats: Sequence[str] = field(default_factory=lambda: list(DEFAULT_ROLLING_STATS))
-    calendar_features: Sequence[str] = field(
-        default_factory=lambda: list(DEFAULT_CALENDAR_FEATURES)
-    )
+    lag_steps: Sequence[int] | None = field(default_factory=lambda: list(_LAG_INIT))
+    rolling_windows: Sequence[int] | None = field(default_factory=lambda: list(_ROLL_WIN_INIT))
+    rolling_stats: Sequence[str] = field(default_factory=lambda: list(_ROLL_STAT_INIT))
+    calendar_features: Sequence[str] = field(default_factory=lambda: list(_CAL_INIT))
     use_cyclical_time: bool = True
 
     regressor_cols: Sequence[str] | None = None
@@ -292,15 +294,17 @@ class FeatureEngineer:
                 if engineered_cols:
                     df_work = df_work.dropna(subset=engineered_cols)
 
+        # Narrow type to DataFrame to ensure attribute access
         feature_frame = df_work[feature_cols].copy()
-
-        # Narrow type to DataFrame to ensure attribute access (.columns, .to_numpy)
         if not isinstance(feature_frame, pd.DataFrame):  # pragma: no cover
             feature_frame = pd.DataFrame(feature_frame)
 
         # Encode any remaining non-numeric feature columns.
         if any(not is_numeric_dtype(feature_frame[c]) for c in feature_frame.columns):
             feature_frame = encode_non_numeric_as_category_codes(feature_frame)
+
+        # Cast to help Pyright resolve to_numpy attribute safely
+        feature_frame = cast(pd.DataFrame, feature_frame)
 
         X_values = feature_frame.to_numpy(dtype=float)
         y_values = df_work[self.target_col].to_numpy(dtype=float)
