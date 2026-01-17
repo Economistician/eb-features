@@ -1,0 +1,125 @@
+REPOSITORY: eb-features
+
+ROLE
+This repository provides deterministic feature engineering primitives for
+panel-based time-series forecasting.
+
+It is the upstream feature construction layer in the Electric Barometer ecosystem:
+it produces panel-aware, time-causal, validated feature columns (lags, rolling
+windows, calendar encodings, entity transforms) that downstream modeling and
+evaluation workflows consume.
+
+This repository defines HOW to construct features correctly and reproducibly.
+It does not train models, generate forecasts, compute EB metrics, govern decisions,
+or apply adjustments.
+
+---
+
+PRIMARY RESPONSIBILITIES
+
+- Panel-aware feature construction:
+  - lags and lag bundles
+  - rolling aggregates / rolling windows
+  - calendar features and time encodings
+  - entity-level encodings and transformations
+  - standardized configuration objects for feature pipelines (when applicable)
+
+- Validation by construction:
+  - explicit checks for entity/time keys
+  - ordering/monotonicity and leakage prevention checks
+  - strict handling of missingness introduced by lag/rolling operations
+
+- Deterministic, reproducible transformations:
+  - no stochastic behavior
+  - no hidden state
+  - stable outputs given identical inputs and configuration
+
+- Framework-agnostic design:
+  - DataFrame-first utilities intended to feed any modeling stack
+  - avoid coupling to specific training/evaluation frameworks
+
+---
+
+NON-RESPONSIBILITIES (STRICT)
+
+This repository MUST NOT:
+
+- Train models, perform inference, or run a model zoo
+  (belongs in eb-adapters / electric-barometer)
+
+- Define or compute evaluation metrics (FRS, NSL, UD, HR@τ, CWSL, etc.)
+  (belongs in eb-metrics / eb-evaluation)
+
+- Perform optimization or parameter tuning
+  (belongs in eb-optimization)
+
+- Encode governance rules, thresholds, or decision logic
+  (belongs in governance layers; see eb-integration/llm.system.txt)
+
+- Define EB artifact schemas or validation contracts
+  (belongs in eb-contracts)
+
+- Perform I/O, network calls, or service behaviors as part of feature generation
+
+---
+
+CORE INVARIANTS
+
+- Temporal causality is mandatory.
+  Feature generation must not leak future information into historical rows.
+  All lag/rolling features must be computed using only past (or at most current)
+  information relative to each row’s time index.
+
+- Entity boundaries are respected.
+  Features must not mix information across entities unless explicitly requested
+  by a documented, named operation.
+
+- Grain is explicit.
+  Feature utilities must not silently change the grain of the dataset.
+  Any aggregation that changes grain must be explicit and clearly named.
+
+- Deterministic and side-effect free.
+  Functions must be pure transformations: no mutation of caller data unless
+  explicitly documented; no hidden caching; no randomness.
+
+- Validation is explicit and testable.
+  If an input is structurally invalid (missing keys, unsorted time, duplicates),
+  fail fast with clear errors rather than producing silent corruption.
+
+---
+
+SYSTEM RELATIONSHIP
+
+- This repository defers to `eb-integration/llm.system.txt` for system-wide
+  pipeline ordering and governance invariants.
+- eb-features produces inputs used by:
+  - eb-adapters / electric-barometer (modeling workflows)
+  - (optionally) eb-evaluation (feature-aware analysis), but it is not an
+    evaluation layer itself.
+
+---
+
+ALLOWED CHANGES
+
+- Adding new feature primitives (lags, rolling, calendar, encoders) with tests
+- Improving performance, numerical stability, and clarity
+- Strengthening validation and leakage-prevention checks
+- Adding configuration objects that make feature pipelines more reproducible
+
+---
+
+DISALLOWED CHANGES
+
+- Introducing model training, evaluation, optimization, or governance logic
+- Adding implicit heuristics that change feature meaning without explicit config
+- Making transformations stochastic or stateful
+- Introducing cross-repo dependencies that blur responsibilities
+
+---
+
+INTERPRETATION RULE
+
+If the change is about constructing panel-aware, time-causal, deterministic
+features and validating them, it belongs here.
+If the change is about choosing models, evaluating forecasts, governing behavior,
+or executing decisions, it does not belong here.
