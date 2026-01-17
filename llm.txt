@@ -13,6 +13,10 @@ This repository defines HOW to construct features correctly and reproducibly.
 It does not train models, generate forecasts, compute EB metrics, govern decisions,
 or apply adjustments.
 
+STYLE
+- Inherits ecosystem-wide style and linting rules from
+  eb-integration/tooling/llm.style.txt via shared tooling.
+
 ---
 
 PRIMARY RESPONSIBILITIES
