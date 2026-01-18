@@ -34,9 +34,31 @@ See Also
 
 from __future__ import annotations
 
+from eb_features.panel.calendar import add_calendar_features
+from eb_features.panel.constants import (
+    ALLOWED_CALENDAR_FEATURES,
+    ALLOWED_ROLLING_STATS,
+    DEFAULT_CALENDAR_FEATURES,
+    DEFAULT_LAG_STEPS,
+    DEFAULT_ROLLING_STATS,
+    DEFAULT_ROLLING_WINDOWS,
+)
+from eb_features.panel.encoders import encode_non_numeric_as_category_codes
 from eb_features.panel.engineering import FeatureConfig, FeatureEngineer
+from eb_features.panel.lags import add_lag_features
+from eb_features.panel.rolling import add_rolling_features
 
 __all__ = [
+    "ALLOWED_CALENDAR_FEATURES",
+    "ALLOWED_ROLLING_STATS",
+    "DEFAULT_CALENDAR_FEATURES",
+    "DEFAULT_LAG_STEPS",
+    "DEFAULT_ROLLING_STATS",
+    "DEFAULT_ROLLING_WINDOWS",
     "FeatureConfig",
     "FeatureEngineer",
+    "add_calendar_features",
+    "add_lag_features",
+    "add_rolling_features",
+    "encode_non_numeric_as_category_codes",
 ]
